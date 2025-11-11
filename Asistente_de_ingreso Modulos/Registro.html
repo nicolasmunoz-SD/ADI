@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Usuario</title>
+    <!-- Los estilos los agregarás después en un archivo CSS -->
+</head>
+<body>
+    <h1>Registro de Usuario</h1>
+    
+    <form action="registro.php" method="POST">
+        <div>
+            <label for="nombre">Nombre de usuario:</label><br>
+            <input type="text" id="nombre" name="nombre" required>
+        </div>
+        
+        <br>
+        
+        <div>
+            <label for="clave">Contraseña:</label><br>
+            <input type="password" id="clave" name="clave" required>
+        </div>
+        
+        <br>
+        
+        <div>
+            <button type="submit">Registrar Usuario</button>
+        </div>
+    </form>
+    
+    <br>
+    
+    <div id="mensaje">
+        <!-- Aquí se mostrarán los mensajes de respuesta -->
+    </div>
+</body>
+</html>
