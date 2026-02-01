@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formularios - Asistente de Ingreso</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #f5f7fa;
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-item {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* Contenedor Principal */
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        /* Mensajes */
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+        
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+        
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Grid de Formularios */
+        .forms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .form-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s;
+        }
+        
+        .form-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .form-title {
+            font-size: 20px;
+            color: #444;
+            margin-bottom: 10px;
+        }
+        
+        .form-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+        
+        .status-pendiente {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-completado {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .form-description {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            color: #333;
+        }
+        
+        .close-modal {
+            font-size: 28px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5ee;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            margin-top: 50px;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .nav-menu {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .forms-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1>Formularios Disponibles</h1>
+            <div class="nav-menu">
+                <a href="Dashboard.html" class="nav-item">Dashboard</a>
+                <a href="perfil.html" class="nav-item">Mi Perfil</a>
+                <a href="documentos.php" class="nav-item">Documentos</a>
+                <a href="logout.php" class="nav-item">Cerrar Sesión</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <div class="container">
+        <!-- Mensajes -->
+        <div id="alert-message" class="alert"></div>
+        
+        <!-- Contenedor de formularios -->
+        <div id="forms-container">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Cargando formularios...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para formulario -->
+    <div id="form-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Formulario</h2>
+                <span class="close-modal" onclick="cerrarModal()">&times;</span>
+            </div>
+            <div id="modal-description" style="color: #666; margin-bottom: 20px;"></div>
+            <form id="dynamic-form">
+                <!-- Los campos se generarán dinámicamente -->
+            </form>
+            <div style="margin-top: 20px; text-align: right;">
+                <button type="button" onclick="enviarFormulario()" class="btn btn-primary">Enviar Formulario</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Asistente de Ingreso &copy; 2026</p>
+    </footer>
+
+    <script>
+        // Elementos del DOM
+        let formsContainer;
+        let alertMessage;
+
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obtener referencias a los elementos
+            formsContainer = document.getElementById('forms-container');
+            alertMessage = document.getElementById('alert-message');
+            
+            if (!formsContainer) {
+                console.error('Error: No se encontró el elemento forms-container');
+                return;
+            }
+            
+            if (!alertMessage) {
+                console.error('Error: No se encontró el elemento alert-message');
+            }
+            
+            // Cargar formularios
+            cargarFormularios();
+        });
+
+        // Mostrar mensaje
+        function mostrarMensaje(texto, tipo = 'error') {
+            if (alertMessage) {
+                alertMessage.textContent = texto;
+                alertMessage.className = `alert alert-${tipo}`;
+                alertMessage.style.display = 'block';
+                
+                setTimeout(() => {
+                    alertMessage.style.display = 'none';
+                }, 5000);
+            } else {
+                alert(texto);
+            }
+        }
+
+        // Cargar formularios
+        async function cargarFormularios() {
+            if (!formsContainer) {
+                console.error('formsContainer no está definido');
+                return;
+            }
+            
+            try {
+                const response = await fetch('formularios.php?action=getForms');
+                
+                if (!response.ok) {
+                    if (response.status === 401 || response.status === 403) {
+                        // No autorizado - redirigir a login
+                        window.location.href = 'login.php';
+                        return;
+                    }
+                    throw new Error(`Error del servidor: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Verificar error de autorización
+                if (data.error && (data.error.includes('No autorizado') || data.error.includes('autorizado'))) {
+                    window.location.href = 'login.php';
+                    return;
+                }
+                
+                // Si no hay formularios
+                if (!data || data.length === 0) {
+                    formsContainer.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #666;">
+                            <h3>No hay formularios disponibles</h3>
+                            <p>Pronto se agregarán nuevos formularios.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Generar HTML
+                let html = '<div class="forms-grid">';
+                
+                data.forEach(form => {
+                    const estado = form.estado_usuario || 'pendiente';
+                    const fecha = form.fecha_completado ? 
+                        `<small style="display: block; color: #888; margin-top: 5px;">
+                            Completado: ${form.fecha_completado}
+                        </small>` : '';
+                    
+                    html += `
+                        <div class="form-card">
+                            <h3 class="form-title">${form.titulo}</h3>
+                            <span class="form-status status-${estado}">
+                                ${estado === 'completado' ? 'Completado' : 'Pendiente'}
+                            </span>
+                            <p class="form-description">${form.descripcion || 'Sin descripción'}</p>
+                            ${fecha}
+                            <div class="form-actions">
+                                <button onclick="abrirFormulario(${form.id})" class="btn btn-primary">
+                                    ${estado === 'completado' ? 'Ver/Editar' : 'Completar'}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                formsContainer.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('Error al cargar formularios');
+                if (formsContainer) {
+                    formsContainer.innerHTML = `
+                        <div style="text-align: center; padding: 40px;">
+                            <button onclick="cargarFormularios()" class="btn btn-primary">
+                                Reintentar
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Abrir formulario
+        async function abrirFormulario(formId) {
+            try {
+                const response = await fetch(`formularios.php?action=getForm&id=${formId}`);
+                
+                if (response.status === 401 || response.status === 403) {
+                    window.location.href = 'login.php';
+                    return;
+                }
+                
+                const formData = await response.json();
+                
+                if (formData.error) {
+                    if (formData.error.includes('No autorizado')) {
+                        window.location.href = 'login.php';
+                    } else {
+                        mostrarMensaje(formData.error);
+                    }
+                    return;
+                }
+                
+                // Actualizar modal
+                document.getElementById('modal-title').textContent = formData.titulo;
+                document.getElementById('modal-description').textContent = formData.descripcion || '';
+                
+                const formContainer = document.getElementById('dynamic-form');
+                formContainer.innerHTML = '';
+                formContainer.dataset.formId = formId;
+                
+                // Generar campos
+                if (formData.campos && formData.campos.length > 0) {
+                    formData.campos.forEach(campo => {
+                        const div = document.createElement('div');
+                        div.className = 'form-group';
+                        
+                        const valor = campo.valor_actual || '';
+                        let input = '';
+                        
+                        if (campo.tipo_campo === 'text') {
+                            input = `<input type="text" name="${campo.nombre_campo}" value="${valor}" ${campo.requerido ? 'required' : ''}>`;
+                        } else if (campo.tipo_campo === 'email') {
+                            input = `<input type="email" name="${campo.nombre_campo}" value="${valor}" ${campo.requerido ? 'required' : ''}>`;
+                        } else if (campo.tipo_campo === 'number') {
+                            input = `<input type="number" name="${campo.nombre_campo}" value="${valor}" ${campo.requerido ? 'required' : ''}>`;
+                        } else if (campo.tipo_campo === 'date') {
+                            input = `<input type="date" name="${campo.nombre_campo}" value="${valor}" ${campo.requerido ? 'required' : ''}>`;
+                        } else if (campo.tipo_campo === 'select') {
+                            const options = campo.opciones ? campo.opciones.split(',').map(opt => 
+                                `<option value="${opt.trim()}" ${valor === opt.trim() ? 'selected' : ''}>${opt.trim()}</option>`
+                            ).join('') : '';
+                            input = `<select name="${campo.nombre_campo}" ${campo.requerido ? 'required' : ''}>
+                                <option value="">Seleccionar...</option>
+                                ${options}
+                            </select>`;
+                        } else if (campo.tipo_campo === 'textarea') {
+                            input = `<textarea name="${campo.nombre_campo}" rows="4" ${campo.requerido ? 'required' : ''}>${valor}</textarea>`;
+                        } else {
+                            input = `<input type="text" name="${campo.nombre_campo}" value="${valor}">`;
+                        }
+                        
+                        div.innerHTML = `
+                            <label>${campo.etiqueta} ${campo.requerido ? '<span style="color:red">*</span>' : ''}</label>
+                            ${input}
+                        `;
+                        
+                        formContainer.appendChild(div);
+                    });
+                } else {
+                    formContainer.innerHTML = '<p>No hay campos en este formulario.</p>';
+                }
+                
+                // Mostrar modal
+                document.getElementById('form-modal').style.display = 'flex';
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('Error al cargar el formulario');
+            }
+        }
+
+        // Enviar formulario
+        async function enviarFormulario() {
+            const formContainer = document.getElementById('dynamic-form');
+            const formId = formContainer.dataset.formId;
+            
+            // Validar
+            const required = formContainer.querySelectorAll('[required]');
+            let valid = true;
+            
+            required.forEach(input => {
+                if (!input.value.trim()) {
+                    input.style.borderColor = 'red';
+                    valid = false;
+                } else {
+                    input.style.borderColor = '';
+                }
+            });
+            
+            if (!valid) {
+                mostrarMensaje('Complete los campos requeridos');
+                return;
+            }
+            
+            try {
+                const formData = new FormData();
+                formData.append('form_id', formId);
+                
+                const inputs = formContainer.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    if (input.name) {
+                        formData.append(input.name, input.value);
+                    }
+                });
+                
+                const response = await fetch('formularios.php?action=submitForm', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.status === 401 || response.status === 403) {
+                    window.location.href = 'login.php';
+                    return;
+                }
+                
+                const result = await response.text();
+                
+                if (result === 'success') {
+                    mostrarMensaje('Formulario guardado correctamente', 'success');
+                    cerrarModal();
+                    cargarFormularios();
+                } else {
+                    mostrarMensaje('Error: ' + result);
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('Error al enviar formulario');
+            }
+        }
+
+        // Cerrar modal
+        function cerrarModal() {
+            document.getElementById('form-modal').style.display = 'none';
+        }
+
+        // Cerrar al hacer clic fuera
+        window.onclick = function(event) {
+            if (event.target === document.getElementById('form-modal')) {
+                cerrarModal();
+            }
+        }
+    </script>
+</body>
+</html>
